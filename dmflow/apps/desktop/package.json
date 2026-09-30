@@ -1,0 +1,8 @@
+{
+  "name": "@dmflow/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "main": "dist/main.cjs",
+  "description": "Thoughtful Instagram automation and resource attribution",
+  "author": "DMFlow"
+}

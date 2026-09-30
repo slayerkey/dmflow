@@ -1,0 +1,22 @@
+{
+  "appId": "app.dmflow.desktop",
+  "productName": "DMFlow",
+  "directories": {
+    "app": "apps/desktop",
+    "output": "artifacts"
+  },
+  "files": ["dist/**/*", "package.json"],
+  "mac": {
+    "target": ["dir", "zip"],
+    "category": "public.app-category.business",
+    "identity": null,
+    "icon": "apps/desktop/assets/icon.png"
+  },
+  "win": {
+    "target": "nsis"
+  },
+  "linux": {
+    "target": "AppImage"
+  },
+  "asar": true
+}

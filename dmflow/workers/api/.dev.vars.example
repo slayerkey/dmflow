@@ -1,0 +1,9 @@
+# Copy to .dev.vars only for local Wrangler development. Never commit real secrets.
+# Instagram > API setup with Instagram login credentials:
+META_APP_ID=
+META_APP_SECRET=
+# App secret used by the webhook signing app; may differ from Instagram login secret.
+META_WEBHOOK_SECRET=
+META_VERIFY_TOKEN=
+# 32 random bytes represented as 64 hexadecimal characters:
+TOKEN_ENCRYPTION_KEY=
