@@ -9,7 +9,7 @@ Updated 2026-10-01. This document describes what the prototype actually does and
 
 **Job:** turn a campaign brief plus legitimately sourced creator candidates into an explainable shortlist, reviewed outreach drafts and a recruitment pipeline.
 
-**Implemented now:** brief builder, CSV/operator imports, deterministic evidence-aware ranking, missing-data flags, manual evidence verification, template/local-AI drafting, human approval, permitted email-client handoff, response/status tracking, CSV export, optional server-side licensed Modash adapter.
+**Implemented now:** brief builder, CSV/operator imports, deterministic evidence-aware ranking, missing-data flags, manual evidence verification, template/local-AI drafting, human approval, permitted email-client handoff, response/status tracking, CSV export, optional server-side licensed Influencers Club and Modash discovery adapters.
 
 **Not claimed:** automatic globally fresh viral discovery, provider-verified performance for arbitrary accounts, scraped contact details, unsolicited Instagram DMs, automatic email delivery, production multi-tenant SaaS.
 
@@ -29,11 +29,11 @@ Updated 2026-10-01. This document describes what the prototype actually does and
 
 **Existing implementation:** Electron/React demo, shared SQLite/D1 processing engine, matching/typo/suppression logic, attribution, Cloudflare Worker adapter and Instagram provider code.
 
-**Still external:** Meta production approval/live account acceptance and distributable signing.
+**Still external:** Meta production approval/live account acceptance and production code signing/notarization. Cross-platform tests and unsigned Windows packaging are verified in CI.
 
 ## Why Scout first
 
-Creator auto-DM is crowded. Campaign-wide automation has value only if agencies actually want to own this layer and every participant can be authorized. Scout can be tested earlier with an agency's existing list, which measures whether ranking + research + outreach preparation removes meaningful labor before paying for a large discovery API contract.
+Creator auto-DM is crowded. Campaign-wide automation has value only if agencies actually want to own this layer and every participant can be authorized. Scout can be tested earlier with an agency's existing list, which measures whether ranking + research + outreach preparation removes meaningful labor before paying for creator data. A lower-cost Influencers Club trial/API path now exists, so live discovery can be tested without committing to Modash's enterprise annual minimum.
 
 ## Validation metric
 
@@ -75,4 +75,4 @@ npm run package:win   # Windows
 npm run package       # macOS ARM64
 ```
 
-Cross-platform CI lives in `.github/workflows/dmflow-verify.yml`.
+Cross-platform CI lives in `.github/workflows/dmflow-prototype-verification.yml`. See `PILOT-RUNBOOK.md` for the next validation run and `PROVIDER-OPTIONS.md` for discovery-data choices.
