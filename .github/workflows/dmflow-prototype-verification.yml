@@ -1,0 +1,72 @@
+name: DMFlow prototype verification
+
+on:
+  push:
+    branches:
+      - dmflow-scout-prototype-2026-10-01
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    name: Test (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    defaults:
+      run:
+        working-directory: dmflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+          cache-dependency-path: dmflow/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run test:portal
+      - run: npm run test:worker
+
+  windows-package:
+    name: Windows NSIS package
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: dmflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+          cache-dependency-path: dmflow/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run package:win
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dmflow-windows-unsigned
+          path: dmflow/artifacts/**/*
+          if-no-files-found: error
+          retention-days: 7
+
+  mac-package:
+    name: macOS ARM64 package
+    runs-on: macos-15
+    defaults:
+      run:
+        working-directory: dmflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+          cache-dependency-path: dmflow/package-lock.json
+      - run: npm ci --no-audit --no-fund
+      - run: npm run package
