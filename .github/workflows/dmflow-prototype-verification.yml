@@ -9,6 +9,10 @@ on:
       - 'dmflow/*.md'
   workflow_dispatch:
 
+concurrency:
+  group: dmflow-prototype-${{ github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
