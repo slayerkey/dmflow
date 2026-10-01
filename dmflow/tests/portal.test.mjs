@@ -78,3 +78,23 @@ test('Affordable licensed discovery adapter is source-aware and server-authentic
   assert.equal(seen.options.headers.Authorization,'Bearer test-secret');
   assert(!seen.options.body.includes('test-secret'));
 });
+
+
+test('Portal browser assets compile and include current Scout UI',async()=>{
+  const server=createPortalServer();
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const base=`http://127.0.0.1:${server.address().port}`;
+  try{
+    const jsResp=await fetch(base+'/assets/main.js');
+    assert.equal(jsResp.status,200);
+    const js=await jsResp.text();
+    assert.doesNotThrow(()=>new Function(js));
+    assert(js.includes('Influencers Club'));
+    assert(js.includes('Find creators worth contacting.'));
+    const css=await fetch(base+'/assets/main.css').then(r=>r.text());
+    assert(css.includes('.creator-card-head'));
+    assert(css.includes('.provider-choices'));
+  } finally {
+    await new Promise(r=>server.close(r));
+  }
+});
