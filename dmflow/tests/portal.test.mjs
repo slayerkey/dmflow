@@ -1,5 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {parseCSV,normalizeCandidate,evaluate,draftOutreach,exportCSV} from '../packages/scout/src/engine.mjs';
+import {buildDiscoveryQuery,buildModashRequest,mapModashResults} from '../packages/scout/src/providers.mjs';
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'dmflow-portal-'));process.env.DMFLOW_DATA_DIR=tmp;
 const {createPortalServer}=await import('../apps/portal/server.mjs');
 test('CSV quoted values and invalid input',()=>{assert.equal(parseCSV('handle,platform,caption\nfoo,instagram,"a, b"')[0].caption,'a, b');assert.throws(()=>parseCSV('handle,platform\nx,instagram,"broken'));assert.throws(()=>normalizeCandidate({handle:'x',platform:'instagram'}));});
@@ -33,4 +34,21 @@ test('Optional AI drafting uses user-configured local-only model and keeps appro
  const server=createPortalServer();await new Promise(r=>server.listen(0,'127.0.0.1',r));const base=`http://127.0.0.1:${server.address().port}`;
  const post=async(path,p)=>{let r=await fetch(base+path,{method:'POST',headers:{'Origin':base,'Content-Type':'application/json'},body:JSON.stringify(p)});return [r.status,await r.json()];};
  try{let s=(await post('/api/sample',{}))[1];const id=s.candidates[0].id;assert.equal((await post('/api/ai-draft',{id}))[0],400);await post('/api/verify',{id,verified:true});let draft=await post('/api/ai-draft',{id});assert.equal(draft[0],200);assert.equal(draft[1].candidates[0].status,'drafted');assert.equal(draft[1].candidates[0].approved_at,null);assert(draft[1].candidates[0].draft.includes('Subject:'));}finally{await new Promise(r=>server.close(r));await new Promise(r=>mock.close(r));delete process.env.SCOUT_OLLAMA_URL;delete process.env.SCOUT_OLLAMA_MODEL;fs.rmSync(dir,{recursive:true,force:true});}
+});
+
+
+test('Licensed discovery adapter keeps costs and evidence explicit',()=>{
+  const brief={deliverable:'two skincare tutorials',format:'tutorial',keywords:'skincare,routine'};
+  assert(buildDiscoveryQuery(brief).includes('skincare'));
+  const req=buildModashRequest({brief,platform:'instagram',limit:7});
+  assert.equal(req.url,'https://api.modash.io/v1/ai/instagram/text-search');
+  assert.equal(req.body.pageSize,7);
+  assert.equal(req.body.filters.lastPostedInDays,30);
+  const rows=mapModashResults({profiles:[{profile:{username:'creator.demo',fullname:'Creator Demo',followers:12345,engagementRate:0.04},matchingPosts:[{url:'https://www.instagram.com/p/demo',score:0.88}]}]},{platform:'instagram'});
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].handle,'creator.demo');
+  assert.equal(rows[0].provider_name,'modash');
+  assert.equal(rows[0].provider_similarity,0.88);
+  assert.equal(rows[0].views,'');
+  assert(rows[0].evidence_source.includes('operator must verify'));
 });
