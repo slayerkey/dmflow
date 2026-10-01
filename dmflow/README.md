@@ -83,16 +83,18 @@ npm run web:dev
 npm run test:portal
 ```
 
-Use `/app#scout` for campaign briefs, imported creator candidates, evidence-aware shortlists, manual verification, editable outreach drafts, manual mail-client handoff, pipeline and CSV export. `/app#campaigns` is a consent-first planning-only preview; `/app#creator` points to this existing Electron Creator app, whose source remains unchanged. Fictional examples are labeled; no new live social APIs, billing, third-party scraping or automatic outbound recruitment was enabled. Detailed confidential market research intentionally belongs **outside this public repository**.
+Use `/app#scout` for campaign briefs, imported creator candidates, evidence-aware shortlists, manual verification, editable outreach drafts, manual mail-client handoff, pipeline and CSV export. `/app#campaigns` is a consent-first planning-only preview; `/app#creator` points to this existing Electron Creator app, whose source remains unchanged. Fictional examples are labeled. Optional licensed discovery adapters are credential-gated and server-side; no third-party scraping, billing, or automatic outbound recruitment is enabled. Detailed confidential market research intentionally belongs **outside this public repository**.
 
-Windows development: Node 22.13+ with `npm run web:dev` for the new portal; original Electron Windows NSIS build recipe `npm ci && npm run package:win` requires Windows and remains unverified. Existing Mac packaging script is preserved.
+Windows development: Node 22.13+ with `npm run web:dev` for the new portal. Cross-platform CI now passes the existing tests on Windows/macOS/Linux, and the Windows NSIS recipe successfully produces an unsigned installer in GitHub Actions. A human Windows smoke-test and production signing remain before public distribution. Existing Mac packaging is preserved.
 
-Windows/macOS/Linux Worker integration tests now use the same `npm run test:worker` command; `scripts/run-worker-tests.mjs` sets the test-run environment without a POSIX-only assignment. On Windows PowerShell, use `npm run package:win` for an unsigned local NSIS build once dependencies install. Actual Windows packaging remains unverified until run on Windows.
+Windows/macOS/Linux Worker integration tests now use the same `npm run test:worker` command; `scripts/run-worker-tests.mjs` sets the test-run environment without a POSIX-only assignment. On Windows PowerShell, use `npm run package:win` for an unsigned local NSIS build once dependencies install. Hosted Windows packaging is verified; local human installation/smoke-testing is still required.
 
 ## Product and design notes
 
 - [Product map and current boundaries](docs/PRODUCT-MAP.md)
 - [Website design swipe guide](docs/DESIGN-REFERENCE.md)
+- [Exact Scout pilot runbook](docs/PILOT-RUNBOOK.md)
+- [Scout discovery provider options](docs/PROVIDER-OPTIONS.md)
 - [API research](docs/API_RESEARCH.md)
 - [Current blockers](BLOCKERS.md)
 
