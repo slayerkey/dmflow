@@ -60,7 +60,7 @@ export function draftOutreach(c,brief) {
   return `Subject: Potential creator collaboration — ${campaign}\n\nHey ${c.name||c.handle},\n\n${angle} We are casting ${deliverable} for ${campaign} and thought your work might be relevant.\n\nWould you be open to receiving the brief, timeline and proposed compensation to see if there is a fit? No pressure if not.\n\nBest,\n[Your name]`;
 }
 export function exportCSV(state) {
-  const fields=['name','handle','platform','niche','content_url','caption','views','baseline_views','posted_at','contact_email','evidence_source','source_kind','provider_name','provider_ref','provider_similarity','followers','engagement_rate','verified','status','draft','response_note'];
+  const fields=['name','handle','platform','niche','content_url','caption','views','baseline_views','posted_at','contact_email','evidence_source','source_kind','provider_name','provider_ref','provider_similarity','followers','engagement_rate','verified','shortlisted_at','status','draft','response_note'];
   const clean=value=>{let s=String(value??''); if(/^[\s]*[=+\-@]/.test(s))s="'"+s;return '"'+s.replaceAll('"','""')+'"';};
   return [fields.join(','),...state.candidates.map(c=>fields.map(f=>clean(c[f])).join(','))].join('\r\n');
 }
