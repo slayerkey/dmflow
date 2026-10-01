@@ -8,10 +8,13 @@ Optional free local LLM: install/run Ollama separately; make model `llama3.2` av
 
 Data: ignored `dmflow/work/scout-local.json`, all creator imports local; the repository contains no real creator dataset. Add raw customer conversations/private analysis **outside** this public repository. The Campaigns workspace intentionally allows only manual reusable template planning/consent steps; no multi-account OAuth/deployment is claimed. `/app#creator` points to the original working Electron engine rather than pretending it is already integrated into this Node portal.
 
-Security: loopback binding, same-origin JSON mutations, request-size cap, static path allowlist, escaped UI text, CSV formula mitigation. Multi-user permissions, real commercial data licensing, consent records, deletion tools, independent local-model output verification and actual provider integration must be built before any hosted launch. No checkout is active and prices shown are pilot hypotheses.
+Security: loopback binding, same-origin JSON mutations, request-size cap, static path allowlist, escaped UI text, CSV formula mitigation. Multi-user permissions, production commercial-data licensing review, consent records, deletion tools and independent local-model output verification must be built before any hosted launch. Licensed provider adapters exist, but remain disabled without operator-owned server-side credentials. No checkout is active and prices shown are pilot hypotheses.
 
 Cross-platform project tests: `npm run test:worker` invokes a Node wrapper, rather than requiring Bash-style environment-variable syntax. The original Electron app requires pinned npm dependencies and real local platform acceptance.
 
 ## Optional licensed Scout discovery
 
-The portal exposes provider status without exposing credentials. Modash AI Search is supported behind `SCOUT_MODASH_API_KEY`; the key is read server-side only. Without a key, the discovery button is disabled and `/api/discover` fails closed. Provider-returned candidates remain `licensed_provider_unverified` until an operator checks the cited source; missing views/baselines stay missing. Do not buy or configure a provider until its commercial license and pilot economics are approved. TikTok One is tracked as a separate official-access path and is not impersonated by the Modash adapter.
+The portal exposes provider status without exposing credentials. **Influencers Club Discovery** is the preferred pilot adapter behind `SCOUT_INFLUENCERS_CLUB_API_KEY`; **Modash AI Search** remains an enterprise fallback behind `SCOUT_MODASH_API_KEY`. Keys are read server-side only. Without either key, the discovery button is disabled and `/api/discover` fails closed. Provider-returned candidates remain `licensed_provider_unverified` until an operator checks source evidence; missing views/baselines stay missing. Start with CSV or provider trial access—do not buy an annual data contract until pilot economics justify it. TikTok One remains a separate official-access path.
+
+
+See [the pilot runbook](../../docs/PILOT-RUNBOOK.md) and [provider options](../../docs/PROVIDER-OPTIONS.md) before enabling live discovery.
