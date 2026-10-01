@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - dmflow-scout-prototype-2026-10-01
+    paths-ignore:
+      - 'dmflow/docs/**'
+      - 'dmflow/*.md'
   workflow_dispatch:
 
 permissions:
@@ -35,6 +38,7 @@ jobs:
 
   windows-package:
     name: Windows NSIS package
+    if: github.event_name == 'workflow_dispatch'
     runs-on: windows-latest
     defaults:
       run:
@@ -57,6 +61,7 @@ jobs:
 
   mac-package:
     name: macOS ARM64 package
+    if: github.event_name == 'workflow_dispatch'
     runs-on: macos-15
     defaults:
       run:
