@@ -3,6 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {parseCSV,normalizeCandidate,evaluate,draftOutreach,exportCSV,sampleCandidates,STATUSES} from '../../packages/scout/src/engine.mjs';
+import {providerStatus,discoverWithModash} from '../../packages/scout/src/providers.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const dataDir=process.env.DMFLOW_DATA_DIR || path.resolve(here,'../../work');
 const dataFile=path.join(dataDir,'scout-local.json');
@@ -29,7 +30,7 @@ Constraints: only refer to explicitly checked creator facts, NEVER invent perfor
   c.draft=output.response.trim().slice(0,6000);c.status='drafted';c.approved_at=null;persist();return {source:'local_ai_unverified_output'};
 }
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};
-function publicState(){return {...state,candidates:state.candidates.map(c=>({...c,evaluation:evaluate(c,state.brief)}))};}
+function publicState(){return {...state,providers:providerStatus(),candidates:state.candidates.map(c=>({...c,evaluation:evaluate(c,state.brief)}))};}
 function getCandidate(id){let c=state.candidates.find(x=>x.id===id);if(!c)throw Error('Unknown candidate');return c;}
 async function receive(req){let chunks=[],count=0;for await(const x of req){count+=x.length;if(count>180000)throw Error('Request too large');chunks.push(x);}return JSON.parse(Buffer.concat(chunks).toString('utf8')||'{}');}
 function apply(route,p){
@@ -56,7 +57,14 @@ export function createPortalServer(){return http.createServer(async(req,res)=>{
   if(req.method==='GET'&&pathname==='/api/export'){res.writeHead(200,{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="dmflow-scout-export.csv"','Cache-Control':'no-store'});return res.end(exportCSV(state));}
   if(req.method==='POST'&&pathname.startsWith('/api/')){
     if(req.headers.origin!==origin || !String(req.headers['content-type']||'').startsWith('application/json'))return json(res,403,{error:'Same-origin JSON requests only.'});
-    const p=await receive(req);if(pathname==='/api/ai-draft'){const extra=await localAIDraft(p);return json(res,200,{...extra,...publicState()});}const extra=apply(pathname,p);return json(res,200,{...extra,...publicState()});
+    const p=await receive(req);
+    if(pathname==='/api/ai-draft'){const extra=await localAIDraft(p);return json(res,200,{...extra,...publicState()});}
+    if(pathname==='/api/discover'){
+      const found=await discoverWithModash({brief:state.brief,platform:p.platform,limit:p.limit});let added=0;
+      for(const row of found.candidates){const c=normalizeCandidate(row);Object.assign(c,{source_kind:'licensed_provider_unverified',provider_name:row.provider_name,provider_ref:row.provider_ref,provider_similarity:row.provider_similarity,followers:row.followers,engagement_rate:row.engagement_rate});if(!state.candidates.some(x=>x.handle===c.handle&&x.platform===c.platform)){state.candidates.push(c);added++;}}
+      persist();return json(res,200,{provider:found.provider,provider_total:found.total,added,...publicState()});
+    }
+    const extra=apply(pathname,p);return json(res,200,{...extra,...publicState()});
   }
   const files={'/':'index.html','/index.html':'index.html','/app':'index.html','/creator':'index.html','/campaigns':'index.html','/scout':'index.html','/assets/main.css':'main.css','/assets/main.js':'main.js'};
   const f=files[pathname];if(req.method!=='GET'||!f){res.writeHead(404);return res.end('Not found');}

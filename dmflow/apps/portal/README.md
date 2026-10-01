@@ -11,3 +11,7 @@ Data: ignored `dmflow/work/scout-local.json`, all creator imports local; the rep
 Security: loopback binding, same-origin JSON mutations, request-size cap, static path allowlist, escaped UI text, CSV formula mitigation. Multi-user permissions, real commercial data licensing, consent records, deletion tools, independent local-model output verification and actual provider integration must be built before any hosted launch. No checkout is active and prices shown are pilot hypotheses.
 
 Cross-platform project tests: `npm run test:worker` invokes a Node wrapper, rather than requiring Bash-style environment-variable syntax. The original Electron app requires pinned npm dependencies and real local platform acceptance.
+
+## Optional licensed Scout discovery
+
+The portal exposes provider status without exposing credentials. Modash AI Search is supported behind `SCOUT_MODASH_API_KEY`; the key is read server-side only. Without a key, the discovery button is disabled and `/api/discover` fails closed. Provider-returned candidates remain `licensed_provider_unverified` until an operator checks the cited source; missing views/baselines stay missing. Do not buy or configure a provider until its commercial license and pilot economics are approved. TikTok One is tracked as a separate official-access path and is not impersonated by the Modash adapter.

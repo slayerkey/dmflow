@@ -1,6 +1,6 @@
 # Delivery status and external blockers
 
-Updated 2026-09-29.
+Updated 2026-10-01.
 
 ## Demo verification
 
@@ -22,6 +22,14 @@ The earlier documentation-access blocker was substantially resolved through the 
 
 ## Distribution and deferred verification
 
-No Apple signing identity/notarization access was supplied. The local build is unsigned/not notarized; distributable signing is not claimed. Windows/Linux packaging is not tested. Cloud scale, production recovery, real provider rate limits, real views, and live account identity behavior need pilot evidence.
+No Apple signing identity/notarization access was supplied. The local build is unsigned/not notarized; distributable signing is not claimed. Hosted CI passed on 2026-10-01 for Windows, macOS, and Linux test jobs. The Windows NSIS packaging job also passed and produced `DMFlow Setup 0.1.0.exe`; the installer remains unsigned and still needs a human smoke-test on a Windows desktop before public distribution. Linux desktop packaging remains outside the current deliverable. Cloud scale, production recovery, real provider rate limits, real views, and live account identity behavior need pilot evidence.
 
 TikTok’s official index documents Comment-to-Message and business messaging, but exact region/eligibility and account-specific review access remain unverified. TikTok is explicitly unsupported in V1. Public privacy/deletion materials require the operator’s actual details and are not fabricated.
+
+## Scout discovery and validation
+
+The local Scout prototype now supports CSV/manual research plus a credential-gated Modash AI Search adapter. No paid provider is enabled by default. Provider results preserve provenance and remain human-unverified until checked; the app does not invent missing view/baseline metrics. Nine local Scout/provider tests pass.
+
+**Commercial discovery remains externally blocked by licensing/credentials.** Modash's published Discovery API pricing is not an implementation blocker, but purchasing a contract is intentionally deferred until agency pilots establish willingness to pay. TikTok discovery must use an appropriate TikTok One / TTO path rather than repurposing the Accounts API.
+
+**Market validation remains external.** Product-market demand cannot be solved in code. Run agency-operator pilots with the import-first workflow before buying discovery data or turning on billing.

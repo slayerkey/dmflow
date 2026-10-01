@@ -10,6 +10,7 @@ test('Complete local HTTP recruitment flow with same-origin protections',async()
  const post=async(route,data,origin=base)=>{const r=await fetch(base+route,{method:'POST',headers:{'Origin':origin,'Content-Type':'application/json'},body:JSON.stringify(data)});return [r.status,await r.json()];};
  try{
   assert.equal((await fetch(base+'/health').then(r=>r.json())).liveMessaging,false);
+  let initialState=await fetch(base+'/api/state').then(r=>r.json());assert.equal(initialState.providers.manual_import.configured,true);assert.equal(initialState.providers.modash.configured,false);assert.equal((await post('/api/discover',{platform:'instagram',limit:3}))[0],400);
   assert.equal((await post('/api/sample',{},'https://evil.example'))[0],403);
   assert.equal((await post('/api/brief',{title:'Routine demo',keywords:'skincare',format:'tutorial'}))[0],200);
   let imported=await post('/api/import',{csv:'name,handle,platform,niche,formats,country,caption,views,baseline_views,posted_at,contact_email,evidence_source\nTaylor,testing.demo,instagram,skincare,tutorial,us,My routine,100000,20000,2026-09-24,taylor@example.invalid,operator-supplied'});

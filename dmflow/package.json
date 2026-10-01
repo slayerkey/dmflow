@@ -28,7 +28,7 @@
     "test:worker": "node scripts/run-worker-tests.mjs",
     "format": "prettier --write apps packages workers/api/src/index.ts scripts tests docs *.json",
     "web:dev": "node apps/portal/server.mjs",
-    "test:portal": "node --test tests/portal.test.mjs",
+    "test:portal": "node --test tests/*.test.mjs",
     "package:win": "npm run build && electron-builder --config electron-builder.json --win nsis --x64"
   },
   "dependencies": {

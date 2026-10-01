@@ -23,3 +23,10 @@ The demo’s initial results derive from its SQLite rows: 128,400 views; 2,841 e
 Automated desktop tests use separate disposable data directories under `work/`; they never reset the user’s open demo instance. The source demo and packaged application use their own application-data directories; existing seed data is preserved rather than silently reseeded after a source update.
 
 Build/test output is copied to `artifacts/verification/`. `artifacts/SHA256SUMS.txt` identifies the deliverable archives. These results do not imply cloud deployment, Meta approval, or real Instagram delivery.
+
+
+## 2026-10-01 prototype branch verification
+
+Branch: `dmflow-scout-prototype-2026-10-01`. GitHub Actions run `36927236875` completed successfully. Hosted jobs passed for Windows, macOS, and Linux; the Windows NSIS package and macOS ARM64 package jobs passed. The Windows artifact contains `DMFlow Setup 0.1.0.exe` and an unpacked executable. These hosted results establish build/test compatibility, not code-signing, notarization, or a human Windows GUI smoke-test.
+
+The Scout/portal suite additionally has nine local `.mjs` tests covering CSV safety, evidence limitations, formula mitigation, same-origin HTTP workflow, optional local AI approval gating, provider status, Modash request construction, provider response mapping, and credential gating.
