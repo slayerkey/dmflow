@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {parseCSV,normalizeCandidate,evaluate,draftOutreach,exportCSV,sampleCandidates,STATUSES} from '../../packages/scout/src/engine.mjs';
-import {providerStatus,discoverWithModash} from '../../packages/scout/src/providers.mjs';
+import {providerStatus,discoverCreators} from '../../packages/scout/src/providers.mjs';
 const here=path.dirname(fileURLToPath(import.meta.url));
 const dataDir=process.env.DMFLOW_DATA_DIR || path.resolve(here,'../../work');
 const dataFile=path.join(dataDir,'scout-local.json');
@@ -60,9 +60,9 @@ export function createPortalServer(){return http.createServer(async(req,res)=>{
     const p=await receive(req);
     if(pathname==='/api/ai-draft'){const extra=await localAIDraft(p);return json(res,200,{...extra,...publicState()});}
     if(pathname==='/api/discover'){
-      const found=await discoverWithModash({brief:state.brief,platform:p.platform,limit:p.limit});let added=0;
+      const found=await discoverCreators({provider:String(p.provider||'influencers_club'),brief:state.brief,platform:p.platform,limit:p.limit});let added=0;
       for(const row of found.candidates){const c=normalizeCandidate(row);Object.assign(c,{source_kind:'licensed_provider_unverified',provider_name:row.provider_name,provider_ref:row.provider_ref,provider_similarity:row.provider_similarity,followers:row.followers,engagement_rate:row.engagement_rate});if(!state.candidates.some(x=>x.handle===c.handle&&x.platform===c.platform)){state.candidates.push(c);added++;}}
-      persist();return json(res,200,{provider:found.provider,provider_total:found.total,added,...publicState()});
+      persist();return json(res,200,{provider:found.provider,provider_total:found.total,credits_left:found.credits_left??null,applied_filters:found.applied_filters??null,added,...publicState()});
     }
     const extra=apply(pathname,p);return json(res,200,{...extra,...publicState()});
   }
