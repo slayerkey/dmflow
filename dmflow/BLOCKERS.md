@@ -33,3 +33,18 @@ The local Scout prototype now supports CSV/manual research plus a credential-gat
 **Commercial discovery remains externally blocked by licensing/credentials.** Modash's published Discovery API pricing is not an implementation blocker, but purchasing a contract is intentionally deferred until agency pilots establish willingness to pay. TikTok discovery must use an appropriate TikTok One / TTO path rather than repurposing the Accounts API.
 
 **Market validation remains external.** Product-market demand cannot be solved in code. Run agency-operator pilots with the import-first workflow before buying discovery data or turning on billing.
+
+## October 1 prototype follow-up
+
+**Resolved on the prototype branch:** cross-platform dependency install/test verification and unsigned Windows packaging. GitHub Actions run [36928638475](https://github.com/slayerkey/dmflow/actions/runs/36928638475) completed successfully on Ubuntu, Windows and macOS for `npm ci`, typecheck, existing tests, portal tests and Worker integration tests. The same run built the Windows NSIS package and macOS ARM64 package; the unsigned Windows artifact is retained by GitHub Actions temporarily. This verifies the build recipe, not code signing, notarization or production distribution.
+
+**Partially resolved:** Scout has an optional server-side Modash Discovery API adapter and explicit provider/evidence mapping. It stays disabled without `SCOUT_MODASH_API_KEY`; the public API license currently starts at $16,200/year, so no purchase was made. Manual/CSV import remains the $0-provider validation path. Modash advertises test credits via a demo request, which is the next no-purchase provider test.
+
+**Still external / cannot be solved in source alone:**
+- Meta app credentials, Advanced Access / App Review, live professional-account authorization and real webhook/send acceptance.
+- Cloudflare account authentication and production secrets if Creator live mode is deployed.
+- A commercial creator-data license or approved testing credentials for live Scout discovery.
+- Real agency pilot evidence showing the Scout workflow is worth paying for.
+- Production SaaS account auth, multi-tenancy, billing, privacy/deletion operations and signing certificates. These should not be built before buyer validation unless required for a pilot.
+
+**Not a blocker for the next pilot:** public hosting, automated cold Instagram outreach, or a paid discovery API. Run Scout locally with a real agency-supplied CSV first.
