@@ -1,5 +1,7 @@
 # DMFlow website design reference — public-safe swipe guide
 
+Live-reference check: 2026-10-01. MagicBrief is preserved below only as a historical interface reference because the product shut down July 31, 2026.
+
 Use these products as **layout and interaction references**, not as assets to copy. Reuse patterns: information hierarchy, section rhythm, card density, product-demo framing and interaction ideas. Do not copy logos, proprietary screenshots, illustrations, testimonials or exact copy.
 
 ## Best references
@@ -39,10 +41,13 @@ Use these products as **layout and interaction references**, not as assets to co
 
 **DMFlow use:** Scout candidate results should visually resemble a creative research board — thumbnail/card first, evidence second.
 
-### MagicBrief — https://magicbrief.com
-**Steal the pattern:** creative-tech polish, dense visual browsing UI, purple/bright accent used only where it matters, product screenshot dominates.
+### Arcads — https://arcads.ai
+**Steal the pattern:** creator/advertising energy, large visual product moments, clear input → output storytelling and creator-like media cards.
 
-**DMFlow use:** inspiration for the Scout results workspace and “campaign brief → creators” experience.
+**DMFlow use:** make the marketing layer feel like creator software while keeping Scout's evidence workflow sober and trustworthy.
+
+### MagicBrief — historical only
+MagicBrief shut down July 31, 2026. Its old browsing/card-density patterns can still inspire information architecture, but do not use it as a current market or product reference.
 
 ### Superads — https://superads.ai
 **Steal the pattern:** high-contrast editorial headline, one accent color, extremely clear problem statements, product capability blocks.
@@ -65,7 +70,7 @@ Use these products as **layout and interaction references**, not as assets to co
 
 **20% Insense/minisocial** — creator personality, human faces/video framing, warm editorial moments.
 
-**10% Foreplay/MagicBrief** — dense creative-research cards inside the actual app.
+**10% Foreplay/Arcads** — dense creative-research cards and creator-native visual energy inside the actual app.
 
 Keep one signature color. The current acid-lime is differentiated enough. Use cream/off-white marketing surfaces against the dark app mockups so the creator visuals do not disappear into one black page.
 
