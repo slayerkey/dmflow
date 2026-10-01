@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {parseCSV,normalizeCandidate,evaluate,draftOutreach,exportCSV} from '../packages/scout/src/engine.mjs';
-import {buildDiscoveryQuery,buildModashRequest,mapModashResults} from '../packages/scout/src/providers.mjs';
+import {buildDiscoveryQuery,buildInfluencersClubRequest,mapInfluencersClubResults,discoverWithInfluencersClub,buildModashRequest,mapModashResults} from '../packages/scout/src/providers.mjs';
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'dmflow-portal-'));process.env.DMFLOW_DATA_DIR=tmp;
 const {createPortalServer}=await import('../apps/portal/server.mjs');
 test('CSV quoted values and invalid input',()=>{assert.equal(parseCSV('handle,platform,caption\nfoo,instagram,"a, b"')[0].caption,'a, b');assert.throws(()=>parseCSV('handle,platform\nx,instagram,"broken'));assert.throws(()=>normalizeCandidate({handle:'x',platform:'instagram'}));});
@@ -51,4 +51,30 @@ test('Licensed discovery adapter keeps costs and evidence explicit',()=>{
   assert.equal(rows[0].provider_similarity,0.88);
   assert.equal(rows[0].views,'');
   assert(rows[0].evidence_source.includes('operator must verify'));
+});
+
+
+test('Affordable licensed discovery adapter is source-aware and server-authenticated',async()=>{
+  const brief={deliverable:'two skincare tutorials',format:'tutorial',keywords:'skincare,routine',country:'us'};
+  const req=buildInfluencersClubRequest({brief,platform:'instagram',limit:8});
+  assert.equal(req.url,'https://api-dashboard.influencers.club/public/v1/discovery/');
+  assert.equal(req.body.platform,'instagram');
+  assert.equal(req.body.paging.limit,8);
+  assert(req.body.nlp_search.includes('skincare'));
+  const raw={total:1,credits_left:'9.75',accounts:[{user_id:'abc123',profile:{username:'ugc.demo',full_name:'UGC Demo',followers:42000,engagement_percent:3.4}}]};
+  const rows=mapInfluencersClubResults(raw,{platform:'instagram'});
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].handle,'ugc.demo');
+  assert.equal(rows[0].provider_name,'influencers_club');
+  assert.equal(rows[0].views,'');
+  assert.equal(rows[0].contact_email,'');
+  assert(rows[0].evidence_source.includes('operator must verify'));
+  let seen=null;
+  const fetchImpl=async(url,options)=>{seen={url,options};return {ok:true,json:async()=>raw};};
+  const found=await discoverWithInfluencersClub({brief,platform:'instagram',limit:8,apiKey:'test-secret',fetchImpl});
+  assert.equal(found.total,1);
+  assert.equal(found.credits_left,'9.75');
+  assert.equal(seen.url,req.url);
+  assert.equal(seen.options.headers.Authorization,'Bearer test-secret');
+  assert(!seen.options.body.includes('test-secret'));
 });
