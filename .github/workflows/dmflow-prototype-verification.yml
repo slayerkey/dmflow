@@ -35,6 +35,7 @@ jobs:
           cache: npm
           cache-dependency-path: dmflow/package-lock.json
       - run: npm ci --no-audit --no-fund
+      - run: npm run doctor
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:portal
