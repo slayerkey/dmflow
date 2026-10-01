@@ -91,10 +91,43 @@ test('Portal browser assets compile and include current Scout UI',async()=>{
     assert.doesNotThrow(()=>new Function(js));
     assert(js.includes('Influencers Club'));
     assert(js.includes('Find creators worth contacting.'));
+    assert(js.includes('Pilot Mode'));
     const css=await fetch(base+'/assets/main.css').then(r=>r.text());
     assert(css.includes('.creator-card-head'));
     assert(css.includes('.provider-choices'));
   } finally {
     await new Promise(r=>server.close(r));
   }
+});
+
+
+test('Pilot Mode records time-to-ten without external analytics',async()=>{
+  const server=createPortalServer();
+  await new Promise(r=>server.listen(0,'127.0.0.1',r));
+  const base=`http://127.0.0.1:${server.address().port}`;
+  const post=async(route,p={})=>{const r=await fetch(base+route,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify(p)});return [r.status,await r.json()];};
+  try{
+    await post('/api/reset');
+    const rows=['name,handle,platform,niche'];
+    for(let i=0;i<10;i++)rows.push(`Creator ${i},pilot.${i},instagram,skincare`);
+    let imported=await post('/api/import',{csv:rows.join('\n')});
+    assert.equal(imported[0],200);
+    assert.equal(imported[1].candidates.length,10);
+    let started=await post('/api/pilot-start',{baseline_minutes:45,note:'private pilot note'});
+    assert.equal(started[1].pilot.baseline_minutes,45);
+    assert.equal(started[1].pilot.shortlisted_count,0);
+    for(const creator of started[1].candidates)await post('/api/shortlist',{id:creator.id});
+    let state=await fetch(base+'/api/state').then(r=>r.json());
+    assert.equal(state.pilot.shortlisted_count,10);
+    assert(state.pilot.target_reached_at);
+    assert(state.pilot.time_to_target_minutes>=0);
+    assert(state.candidates.every(x=>x.shortlisted_at));
+    let ended=await post('/api/pilot-end');
+    assert(ended[1].pilot.ended_at);
+    const csv=await fetch(base+'/api/export').then(r=>r.text());
+    assert(csv.includes('shortlisted_at'));
+    let reset=await post('/api/pilot-reset');
+    assert.equal(reset[1].pilot.started_at,null);
+    assert.equal(reset[1].candidates.length,10);
+  }finally{await new Promise(r=>server.close(r));}
 });
