@@ -28,9 +28,9 @@ TikTok’s official index documents Comment-to-Message and business messaging, b
 
 ## Scout discovery and validation
 
-The local Scout prototype now supports CSV/manual research plus a credential-gated Modash AI Search adapter. No paid provider is enabled by default. Provider results preserve provenance and remain human-unverified until checked; the app does not invent missing view/baseline metrics. Nine local Scout/provider tests pass.
+The local Scout prototype now supports CSV/manual research plus credential-gated Influencers Club Discovery and Modash AI Search adapters. No paid provider is enabled by default. Provider results preserve provenance and remain human-unverified until checked; the app does not invent missing view/baseline metrics. Nine local Scout/provider tests pass.
 
-**Commercial discovery remains externally blocked by licensing/credentials.** Modash's published Discovery API pricing is not an implementation blocker, but purchasing a contract is intentionally deferred until agency pilots establish willingness to pay. TikTok discovery must use an appropriate TikTok One / TTO path rather than repurposing the Accounts API.
+**Live discovery credentials remain external, but price is no longer a major first-pilot blocker.** Influencers Club currently documents 30 successful API requests on trial accounts and API access on a Pro plan advertised from $208/month. Modash remains an enterprise fallback whose Discovery API starts at $16,200/year. TikTok discovery must use an appropriate licensed/public-index provider or verified TikTok One path rather than repurposing unrelated account APIs.
 
 **Market validation remains external.** Product-market demand cannot be solved in code. Run agency-operator pilots with the import-first workflow before buying discovery data or turning on billing.
 
@@ -38,7 +38,7 @@ The local Scout prototype now supports CSV/manual research plus a credential-gat
 
 **Resolved on the prototype branch:** cross-platform dependency install/test verification and unsigned Windows packaging. GitHub Actions run [36928638475](https://github.com/slayerkey/dmflow/actions/runs/36928638475) completed successfully on Ubuntu, Windows and macOS for `npm ci`, typecheck, existing tests, portal tests and Worker integration tests. The same run built the Windows NSIS package and macOS ARM64 package; the unsigned Windows artifact is retained by GitHub Actions temporarily. This verifies the build recipe, not code signing, notarization or production distribution.
 
-**Partially resolved:** Scout has an optional server-side Modash Discovery API adapter and explicit provider/evidence mapping. It stays disabled without `SCOUT_MODASH_API_KEY`; the public API license currently starts at $16,200/year, so no purchase was made. Manual/CSV import remains the $0-provider validation path. Modash advertises test credits via a demo request, which is the next no-purchase provider test.
+**Partially resolved:** Scout now has server-side Influencers Club and Modash adapters with explicit provider/evidence mapping. They stay disabled without operator-owned keys. Manual/CSV import remains the $0-provider validation path; Influencers Club is the preferred no-contract trial path, while Modash should only be tested with vendor-provided credits unless later economics justify the annual contract.
 
 **Still external / cannot be solved in source alone:**
 - Meta app credentials, Advanced Access / App Review, live professional-account authorization and real webhook/send acceptance.
