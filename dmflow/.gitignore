@@ -16,3 +16,8 @@ work/
 !**/.env.example
 *.pem
 *.key
+
+# Local private research / candidate imports
+confidential/
+work/scout-local.json
+work/scout-local.json.tmp

@@ -72,3 +72,17 @@ Potential leads are the distinct union of clicked and engaged people within the 
 Content yield uses lifetime automation results and the latest lifetime views, counting shared media once. Any missing selected view value makes the aggregate yield unavailable. DM-only outcomes have their own messaged-person rate. View collection time is visible; insights can lag. Time saved is an estimate from confirmed sends and the configurable 30-second default.
 
 V1 intentionally excludes all-future-post targeting, inbox replacement, public replies, multi-step flows, payments, team roles, and TikTok integration. See [roadmap](docs/V2_ROADMAP.md).
+
+## Three-product local portal (Scout pilot)
+
+The additive local [shared product website and Scout prototype](apps/portal/README.md) is available using Node 22.13+ without installing npm packages:
+
+```sh
+npm run web:dev
+# Open http://127.0.0.1:4173
+npm run test:portal
+```
+
+Use `/app#scout` for campaign briefs, imported creator candidates, evidence-aware shortlists, manual verification, editable outreach drafts, manual mail-client handoff, pipeline and CSV export. `/app#campaigns` is a consent-first planning-only preview; `/app#creator` points to this existing Electron Creator app, whose source remains unchanged. Fictional examples are labeled; no new live social APIs, billing, third-party scraping or automatic outbound recruitment was enabled. Detailed confidential market research intentionally belongs **outside this public repository**.
+
+Windows development: Node 22.13+ with `npm run web:dev` for the new portal; original Electron Windows NSIS build recipe `npm ci && npm run package:win` requires Windows and remains unverified. Existing Mac packaging script is preserved.

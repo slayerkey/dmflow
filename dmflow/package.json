@@ -26,7 +26,10 @@
     "test:desktop": "node --import tsx scripts/desktop-test.ts",
     "postinstall": "node node_modules/electron/install.js",
     "test:worker": "DMFLOW_WORKER_TEST=1 node --import tsx --test tests/worker.test.ts",
-    "format": "prettier --write apps packages workers/api/src/index.ts scripts tests docs *.json"
+    "format": "prettier --write apps packages workers/api/src/index.ts scripts tests docs *.json",
+    "web:dev": "node apps/portal/server.mjs",
+    "test:portal": "node --test tests/portal.test.mjs",
+    "package:win": "npm run build && electron-builder --config electron-builder.json --win nsis --x64"
   },
   "dependencies": {
     "hono": "4.13.10",
