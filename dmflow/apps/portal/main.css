@@ -68,3 +68,11 @@ linear-gradient(155deg,#4b2426,#170d0e)}
 .evidence-compact{margin:0 16px 8px;display:grid;grid-template-columns:1fr auto;gap:4px 12px}.evidence-compact strong{grid-column:1/-1;color:#d7e3ce}.evidence-compact span{font-size:9px;color:#7e897c}
 .creator-card>.reason{padding:4px 16px 12px}.creator-actions{display:flex;justify-content:space-between;align-items:center;padding:11px 16px;border-top:1px solid #252b25;background:#0b0e0b}.creator-actions .pill{margin:0}
 @media(max-width:620px){.provider-choices{grid-template-columns:1fr}.creator-card-head{grid-template-columns:82px minmax(0,1fr);gap:12px}.creator-thumb{min-height:118px}.creator-data-row{gap:8px}.creator-title-row{flex-direction:column}.creator-title-row .score{align-self:flex-start}.evidence-compact{grid-template-columns:1fr}}
+
+/* Measured agency-pilot surface */
+.pilot-panel{border-color:#4b5b3e;background:radial-gradient(circle at 92% 8%,rgba(200,255,114,.08),transparent 30%),#101410}
+.pilot-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.pilot-metrics>div{border:1px solid #303a2d;border-radius:10px;background:#121712;padding:12px;min-width:0}
+.pilot-metrics strong{display:block;color:var(--lime);font-size:22px;letter-spacing:-.8px}
+.pilot-metrics span{display:block;color:#7c8579;font-size:8px;letter-spacing:.7px;text-transform:uppercase;margin-top:3px}
+@media(max-width:520px){.pilot-metrics{grid-template-columns:1fr}.pilot-metrics>div{display:flex;align-items:baseline;justify-content:space-between;gap:12px}}
