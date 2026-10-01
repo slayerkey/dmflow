@@ -51,16 +51,19 @@ http://127.0.0.1:4173/app#scout
 ```
 
 Then:
-1. Enter the real campaign brief.
-2. Import the agency's creator CSV, or use licensed discovery if a trial key is configured.
-3. Review the ranked candidates.
-4. Open each shortlisted candidate's source/evidence.
-5. Mark evidence checked only after a human actually verifies it.
-6. Prepare and edit outreach.
-7. Approve the message.
-8. Handoff to the operator's permitted email/client workflow.
-9. Record status manually.
-10. Export the result CSV if the operator wants the session output.
+1. Open **Pilot Mode** and enter the operator's normal baseline time if known.
+2. Click **Start measured pilot** when the operator begins using Scout.
+3. Enter the real campaign brief.
+4. Import the agency's creator CSV, or use licensed discovery if a trial key is configured.
+5. Review the ranked candidates.
+6. Use **Add to shortlist** for creators the operator would genuinely contact. Scout automatically timestamps the tenth distinct shortlist decision.
+7. Open each shortlisted candidate's source/evidence.
+8. Mark evidence checked only after a human actually verifies it.
+9. Prepare and edit outreach.
+10. Approve the message.
+11. Handoff to the operator's permitted email/client workflow.
+12. Record status manually.
+13. Click **End pilot**, then download the local pilot-summary JSON plus the creator CSV if desired.
 
 Nothing in the prototype automatically sends an Instagram cold DM.
 
@@ -104,6 +107,8 @@ For the same campaign brief, capture:
 | Drafts needing factual correction |  |  |  |
 | Tools/tabs used |  |  |  |
 | Follow-up status lost / unclear |  |  |  |
+
+Pilot Mode records the baseline, elapsed session time, time-to-10, shortlist count, verified count and approved count locally. Keep each downloaded pilot summary with the private interview notes.
 
 After permitted outreach, optionally track:
 - meaningful replies;
