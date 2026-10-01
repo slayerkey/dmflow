@@ -12,6 +12,9 @@ Use **Try it out** to send a simulated comment, typo, excluded phrase, blocked e
 
 ## Develop and verify
 
+Run `npm run doctor` anytime for a credential-free status check and the next actionable blocker. It prints presence/status only, never secret values.
+
+
 Requires Node.js 22.13+ with `node:sqlite`, npm, and macOS for Mac packaging. Validated here with Node 23.8 and the pinned lockfile.
 
 ```sh
