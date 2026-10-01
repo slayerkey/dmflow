@@ -40,6 +40,22 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:portal
+
+  worker-integration:
+    name: Worker integration (Miniflare/D1/Queues)
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: dmflow
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.13.1'
+          cache: npm
+          cache-dependency-path: dmflow/package-lock.json
+      - run: npm ci --no-audit --no-fund
       - run: npm run test:worker
 
   windows-package:
