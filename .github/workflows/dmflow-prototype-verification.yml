@@ -38,7 +38,7 @@ jobs:
 
   windows-package:
     name: Windows NSIS package
-    if: github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'workflow_dispatch' || contains(github.event.head_commit.message, '[package]')
     runs-on: windows-latest
     defaults:
       run:
@@ -52,6 +52,13 @@ jobs:
           cache-dependency-path: dmflow/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npm run package:win
+      - name: Test packaged Windows executable
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path artifacts -Recurse -Filter "DMFlow.exe" | Select-Object -First 1
+          if (-not $exe) { throw "Packaged DMFlow.exe not found." }
+          $env:DMFLOW_TEST_EXECUTABLE = $exe.FullName
+          npm run test:desktop
       - uses: actions/upload-artifact@v4
         with:
           name: dmflow-windows-unsigned
@@ -75,3 +82,5 @@ jobs:
           cache-dependency-path: dmflow/package-lock.json
       - run: npm ci --no-audit --no-fund
       - run: npm run package
+      - name: Test packaged macOS executable
+        run: DMFLOW_TEST_EXECUTABLE="$PWD/artifacts/mac-arm64/DMFlow.app/Contents/MacOS/DMFlow" npm run test:desktop
