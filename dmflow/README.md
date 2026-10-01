@@ -88,3 +88,12 @@ Use `/app#scout` for campaign briefs, imported creator candidates, evidence-awar
 Windows development: Node 22.13+ with `npm run web:dev` for the new portal; original Electron Windows NSIS build recipe `npm ci && npm run package:win` requires Windows and remains unverified. Existing Mac packaging script is preserved.
 
 Windows/macOS/Linux Worker integration tests now use the same `npm run test:worker` command; `scripts/run-worker-tests.mjs` sets the test-run environment without a POSIX-only assignment. On Windows PowerShell, use `npm run package:win` for an unsigned local NSIS build once dependencies install. Actual Windows packaging remains unverified until run on Windows.
+
+## Product and design notes
+
+- [Product map and current boundaries](docs/PRODUCT-MAP.md)
+- [Website design swipe guide](docs/DESIGN-REFERENCE.md)
+- [API research](docs/API_RESEARCH.md)
+- [Current blockers](BLOCKERS.md)
+
+The repository is public. Keep customer interviews, private pricing research, credentials and real pilot data outside this repository.
