@@ -7,8 +7,9 @@ import {providerStatus,discoverCreators} from '../../packages/scout/src/provider
 const here=path.dirname(fileURLToPath(import.meta.url));
 const dataDir=process.env.DMFLOW_DATA_DIR || path.resolve(here,'../../work');
 const dataFile=path.join(dataDir,'scout-local.json');
-function fresh(){return {version:1,brief:{title:'',keywords:'',format:'',country:'',deliverable:''},candidates:[],campaignTemplate:{name:'',message:'',creator_count:0},mode:'local'};}
-function load(){try{let s=JSON.parse(fs.readFileSync(dataFile,'utf8'));if(s.version===1&&Array.isArray(s.candidates))return s;}catch{}return fresh();}
+function freshPilot(){return {started_at:null,ended_at:null,baseline_minutes:null,target:10,target_reached_at:null,note:''};}
+function fresh(){return {version:1,brief:{title:'',keywords:'',format:'',country:'',deliverable:''},candidates:[],campaignTemplate:{name:'',message:'',creator_count:0},pilot:freshPilot(),mode:'local'};}
+function load(){try{let s=JSON.parse(fs.readFileSync(dataFile,'utf8'));if(s.version===1&&Array.isArray(s.candidates)){s.pilot={...freshPilot(),...(s.pilot||{})};return s;}}catch{}return fresh();}
 let state=load();
 function persist(){fs.mkdirSync(dataDir,{recursive:true,mode:0o700});let t=dataFile+'.tmp';fs.writeFileSync(t,JSON.stringify(state,null,2),{mode:0o600});fs.renameSync(t,dataFile);}
 async function localAIDraft(p){
@@ -30,7 +31,21 @@ Constraints: only refer to explicitly checked creator facts, NEVER invent perfor
   c.draft=output.response.trim().slice(0,6000);c.status='drafted';c.approved_at=null;persist();return {source:'local_ai_unverified_output'};
 }
 const json=(res,status,data)=>{res.writeHead(status,{'Content-Type':'application/json; charset=utf-8','Cache-Control':'no-store','X-Content-Type-Options':'nosniff'});res.end(JSON.stringify(data));};
-function publicState(){return {...state,providers:providerStatus(),candidates:state.candidates.map(c=>({...c,evaluation:evaluate(c,state.brief)}))};}
+function pilotSummary(){
+  const p={...freshPilot(),...(state.pilot||{})};
+  const shortlisted=state.candidates.filter(c=>c.shortlisted_at).length;
+  const end=p.ended_at||new Date().toISOString();
+  const elapsed=p.started_at?Math.max(0,(Date.parse(end)-Date.parse(p.started_at))/60000):null;
+  const timeToTarget=p.started_at&&p.target_reached_at?Math.max(0,(Date.parse(p.target_reached_at)-Date.parse(p.started_at))/60000):null;
+  return {...p,shortlisted_count:shortlisted,elapsed_minutes:elapsed,time_to_target_minutes:timeToTarget};
+}
+function updatePilotTarget(){
+  state.pilot={...freshPilot(),...(state.pilot||{})};
+  if(!state.pilot.started_at||state.pilot.target_reached_at)return;
+  const shortlisted=state.candidates.filter(c=>c.shortlisted_at).length;
+  if(shortlisted>=state.pilot.target)state.pilot.target_reached_at=new Date().toISOString();
+}
+function publicState(){return {...state,pilot:pilotSummary(),providers:providerStatus(),candidates:state.candidates.map(c=>({...c,evaluation:evaluate(c,state.brief)}))};}
 function getCandidate(id){let c=state.candidates.find(x=>x.id===id);if(!c)throw Error('Unknown candidate');return c;}
 async function receive(req){let chunks=[],count=0;for await(const x of req){count+=x.length;if(count>180000)throw Error('Request too large');chunks.push(x);}return JSON.parse(Buffer.concat(chunks).toString('utf8')||'{}');}
 function apply(route,p){
@@ -38,12 +53,23 @@ function apply(route,p){
   else if(route==='/api/import'){let rows=parseCSV(p.csv||'');if(!rows.length)throw Error('CSV contains no candidates.');let added=0;for(let row of rows){const c=normalizeCandidate(row);if(!state.candidates.some(x=>x.handle===c.handle&&x.platform===c.platform)){state.candidates.push(c);added++;}}return {added};}
   else if(route==='/api/sample'){state=fresh();state.brief={title:'Clean skincare launch (fictional)',keywords:'skincare,routine',format:'tutorial',country:'us',deliverable:'two original short-form demonstrations'};state.candidates=sampleCandidates();}
   else if(route==='/api/verify'){let c=getCandidate(p.id);c.verified=!!p.verified;c.verified_at=c.verified?new Date().toISOString():null;if(!c.verified){c.approved_at=null;if(c.status==='approved')c.status='drafted';}}
-  else if(route==='/api/shortlist'){let c=getCandidate(p.id);c.status='shortlisted';}
+  else if(route==='/api/shortlist'){let c=getCandidate(p.id);c.status='shortlisted';c.shortlisted_at=c.shortlisted_at||new Date().toISOString();updatePilotTarget();}
   else if(route==='/api/draft'){let c=getCandidate(p.id);c.draft=draftOutreach(c,state.brief);c.status='drafted';c.approved_at=null;}
   else if(route==='/api/edit-draft'){let c=getCandidate(p.id);c.draft=String(p.draft||'').slice(0,6000);c.approved_at=null;c.status='drafted';}
   else if(route==='/api/approve'){let c=getCandidate(p.id);if(!c.verified||!c.draft)throw Error('Verify evidence and prepare a draft before approval.');c.status='approved';c.approved_at=new Date().toISOString();}
   else if(route==='/api/status'){let c=getCandidate(p.id);if(!STATUSES.includes(p.status))throw Error('Invalid status');if(p.status==='contacted'&&(!c.approved_at||!c.contact_email))throw Error('Human approval and permitted email are required; use your own email client.');c.status=p.status;c.response_note=String(p.response_note||'').slice(0,1000);}
   else if(route==='/api/campaign-template'){state.campaignTemplate={name:String(p.name||'').slice(0,200),message:String(p.message||'').slice(0,1000),creator_count:Number(p.creator_count)||0};}
+  else if(route==='/api/pilot-start'){
+    const baseline=Number(p.baseline_minutes);
+    state.pilot={...freshPilot(),started_at:new Date().toISOString(),baseline_minutes:Number.isFinite(baseline)&&baseline>=0?baseline:null,note:String(p.note||'').slice(0,1000)};
+    for(const c of state.candidates)c.shortlisted_at=null;
+  }
+  else if(route==='/api/pilot-end'){
+    state.pilot={...freshPilot(),...(state.pilot||{})};
+    if(!state.pilot.started_at)throw Error('Start a pilot session first.');
+    state.pilot.ended_at=new Date().toISOString();
+  }
+  else if(route==='/api/pilot-reset'){state.pilot=freshPilot();}
   else if(route==='/api/reset'){state=fresh();}
   else throw Error('Unknown endpoint');persist();return {};
 }
