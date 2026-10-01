@@ -124,6 +124,10 @@ test('Pilot Mode records time-to-ten without external analytics',async()=>{
     assert(state.candidates.every(x=>x.shortlisted_at));
     let ended=await post('/api/pilot-end');
     assert(ended[1].pilot.ended_at);
+    const pilotExport=await fetch(base+'/api/pilot-export').then(r=>r.json());
+    assert.equal(pilotExport.pilot.baseline_minutes,45);
+    assert.equal(pilotExport.pilot.shortlisted_count,10);
+    assert.equal(pilotExport.candidate_count,10);
     const csv=await fetch(base+'/api/export').then(r=>r.text());
     assert(csv.includes('shortlisted_at'));
     let reset=await post('/api/pilot-reset');
