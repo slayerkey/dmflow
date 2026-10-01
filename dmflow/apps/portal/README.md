@@ -18,3 +18,5 @@ The portal exposes provider status without exposing credentials. **Influencers C
 
 
 See [the pilot runbook](../../docs/PILOT-RUNBOOK.md) and [provider options](../../docs/PROVIDER-OPTIONS.md) before enabling live discovery.
+
+Pilot summaries and creator exports are generated locally and can contain private campaign information; keep them out of this public repository.
