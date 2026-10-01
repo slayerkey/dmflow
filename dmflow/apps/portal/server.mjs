@@ -81,6 +81,7 @@ export function createPortalServer(){return http.createServer(async(req,res)=>{
   if(req.method==='GET'&&pathname==='/health')return json(res,200,{ok:true,mode:'local',liveMessaging:false});
   if(req.method==='GET'&&pathname==='/api/state')return json(res,200,publicState());
   if(req.method==='GET'&&pathname==='/api/export'){res.writeHead(200,{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="dmflow-scout-export.csv"','Cache-Control':'no-store'});return res.end(exportCSV(state));}
+  if(req.method==='GET'&&pathname==='/api/pilot-export'){const summary={exported_at:new Date().toISOString(),brief:state.brief,pilot:pilotSummary(),candidate_count:state.candidates.length,verified_count:state.candidates.filter(c=>c.verified).length,approved_count:state.candidates.filter(c=>c.approved_at).length};res.writeHead(200,{'Content-Type':'application/json; charset=utf-8','Content-Disposition':'attachment; filename="dmflow-pilot-summary.json"','Cache-Control':'no-store'});return res.end(JSON.stringify(summary,null,2));}
   if(req.method==='POST'&&pathname.startsWith('/api/')){
     if(req.headers.origin!==origin || !String(req.headers['content-type']||'').startsWith('application/json'))return json(res,403,{error:'Same-origin JSON requests only.'});
     const p=await receive(req);
