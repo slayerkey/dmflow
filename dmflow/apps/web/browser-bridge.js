@@ -22,7 +22,9 @@ window.dmflow={
   async open(url){
     const u=new URL(url);
     if(u.protocol!=="https:"&&!(u.protocol==="http:"&&u.hostname==="127.0.0.1"))throw Error("Unsupported link");
-    window.open(u.href,"_blank","noopener,noreferrer");
+    if(u.hostname==="www.instagram.com"&&u.pathname.startsWith("/oauth/")){window.location.assign(u.href);return;}
+    const popup=window.open(u.href,"_blank","noopener,noreferrer");
+    if(!popup)window.location.assign(u.href);
   },
   async mode(next){
     if(next&&next!=="live")throw Error("Browser beta connects your live workspace only.");
