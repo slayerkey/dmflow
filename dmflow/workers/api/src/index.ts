@@ -359,7 +359,7 @@ const worker: ExportedHandler<Bindings> = {
       if(!w)return c.text("Email invitation or Cloudflare Access login required",401);
       return env.ASSETS?env.ASSETS.fetch(c.req.raw):c.text("Build web assets before deploying",503);
     });
-    app.get("/",(c)=>env.ASSETS?env.ASSETS.fetch(c.req.raw):c.text("DMFlow Creator API",200));
+    app.get("/",async(c)=>env.ASSETS?await env.ASSETS.fetch(c.req.raw):c.text("DMFlow Creator API",200));
     return app.fetch(request, env, ctx);
   },
   async queue(batch, env) {
