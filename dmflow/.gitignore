@@ -21,3 +21,6 @@ work/
 confidential/
 work/scout-local.json
 work/scout-local.json.tmp
+
+# Built Cloudflare Creator browser app; keep static marketing HTML checked in.
+apps/web/public/app/
