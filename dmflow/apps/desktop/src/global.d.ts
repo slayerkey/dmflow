@@ -1,6 +1,7 @@
 import type { ApiClient } from "../../../packages/shared/src/index";
 declare global {
   interface Window {
+    DMFLOW_WEB?: boolean;
     dmflow: ApiClient & {
       open(url: string): Promise<void>;
       mode(
