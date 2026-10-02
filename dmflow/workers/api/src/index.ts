@@ -197,6 +197,15 @@ const worker: ExportedHandler<Bindings> = {
       );
       return c.text("EVENT_RECEIVED");
     });
+    // Browser sessions are authenticated by Access cookies; require a same-origin
+    // Origin header on state-changing requests to prevent cross-site form submissions.
+    app.use("/app/api/*",async(c,next)=>{
+      if(!["GET","HEAD","OPTIONS"].includes(c.req.method)){
+        const origin=c.req.header("origin");
+        if(origin!==new URL(c.req.url).origin)return c.json({error:"Same-origin request required"},403);
+      }
+      await next();
+    });
     // Hosted browser path: Access JWT + explicit D1 invite instead of desktop pairing token.
     // Keep the public webhook and OAuth callback outside the Access-protected /app path.
     app.post("/app/api/connect/instagram", async (c) => {
