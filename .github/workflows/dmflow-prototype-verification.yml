@@ -42,6 +42,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run test:portal
+      - run: npm run build:web
 
   worker-integration:
     name: Worker integration (Miniflare/D1/Queues)
