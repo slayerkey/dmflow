@@ -97,6 +97,9 @@ integration(
         ).status,
         403,
       );
+      // The hosted Creator beta must fail closed when no signed Access identity is present.
+      assert.equal((await mf.dispatchFetch("https://worker.test/app")).status,401);
+      assert.equal((await mf.dispatchFetch("https://worker.test/app/api/bootstrap")).status,401);
       const payload = JSON.stringify({
         object: "instagram",
         entry: [{ id: "unknown-account", messaging: [] }],
