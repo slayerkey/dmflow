@@ -1766,6 +1766,7 @@ function SettingsPage({
         </button>
         <small>This is an estimate, never a measured productivity claim.</small>
       </section>
+      {!window.DMFLOW_WEB && (
       <section className="panel settings-card">
         <h2>Demo & live workspace</h2>
         <p>
@@ -1820,6 +1821,7 @@ function SettingsPage({
           in OS-protected storage.
         </small>
       </section>
+      )}
       <section className="panel settings-card">
         <h2>A fresh start</h2>
         <p>Restore the sample campaigns and their original results.</p>
