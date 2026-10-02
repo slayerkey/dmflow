@@ -1,4 +1,5 @@
 import { createApi } from "../../../packages/core/src/api";
+import { verifyAccessJwt } from "./access";
 import { Engine } from "../../../packages/core/src/engine";
 import {
   hash,
@@ -24,6 +25,9 @@ type Bindings = Env & {
   META_VERIFY_TOKEN?: string;
   META_WEBHOOK_SECRET?: string;
   TOKEN_ENCRYPTION_KEY?: string;
+  ACCESS_TEAM_DOMAIN?: string;
+  ACCESS_AUD?: string;
+  ASSETS?: Fetcher;
 };
 export class D1Repository implements Repository {
   constructor(public db: D1Database) {}
@@ -74,6 +78,21 @@ async function authorize(db: Repository, r: Request) {
       )
     )[0]?.workspace_id ?? null
   );
+}
+/** Web beta users must have BOTH a verified Cloudflare Access JWT and an active D1 invitation.
+ * Each approved email gets its own workspace; no user-supplied workspace IDs accepted.
+ */
+async function webWorkspace(db: Repository,r: Request,env: Bindings){
+  const email=await verifyAccessJwt(r,env);
+  if(!email)return null;
+  const rows=await db.all("SELECT workspace_id FROM pilot_invites WHERE email=? AND active=1",[email]);
+  if(!rows.length)return null;
+  if(rows[0].workspace_id)return String(rows[0].workspace_id);
+  const candidate=id();
+  await db.run("INSERT OR IGNORE INTO workspaces(id,name) VALUES(?,?)",[candidate,"Creator beta"]);
+  await db.run("UPDATE pilot_invites SET workspace_id=? WHERE email=? AND workspace_id IS NULL AND active=1",[candidate,email]);
+  const again=await db.all("SELECT workspace_id FROM pilot_invites WHERE email=? AND active=1",[email]);
+  return again[0]?.workspace_id?String(again[0].workspace_id):null;
 }
 function log(event: string, values: Row = {}) {
   console.log(JSON.stringify({ event, provider: "instagram", ...values }));
@@ -177,6 +196,21 @@ const worker: ExportedHandler<Bindings> = {
         ),
       );
       return c.text("EVENT_RECEIVED");
+    });
+    // Hosted browser path: Access JWT + explicit D1 invite instead of desktop pairing token.
+    // Keep the public webhook and OAuth callback outside the Access-protected /app path.
+    app.post("/app/api/connect/instagram", async (c) => {
+      const workspace=await webWorkspace(db,c.req.raw,env);
+      if(!workspace)return c.json({error:"Invitation or email login required"},401);
+      const state=opaque();
+      provider.config.state=state;
+      let result;
+      try{ result=await provider.connect(); }
+      catch{return c.json({error:"Meta app credentials and approval are not configured yet."},503);}
+      await db.run("INSERT INTO oauth_states VALUES(?,?,?,NULL)",[
+        await hash(state),workspace,new Date(Date.now()+600000).toISOString()
+      ]);
+      return c.json(result);
     });
     app.post("/api/connect/instagram", async (c) => {
       const workspace = await authorize(db, c.req.raw);
@@ -302,6 +336,21 @@ const worker: ExportedHandler<Bindings> = {
         authorize: (r) => authorize(db, r),
       }),
     );
+    // Same shared Creator engine and D1 database power desktop and web clients.
+    app.route("/app",createApi({
+      db,engine,demo:false,authorize:(r)=>webWorkspace(db,r,env)
+    }));
+    app.get("/app",async(c)=>{
+      const w=await webWorkspace(db,c.req.raw,env);
+      if(!w)return c.text("Email invitation or Cloudflare Access login required",401);
+      return env.ASSETS?env.ASSETS.fetch(new Request(new URL("/app/index.html",c.req.url))):c.text("Build web assets before deploying",503);
+    });
+    app.get("/app/*",async(c)=>{
+      const w=await webWorkspace(db,c.req.raw,env);
+      if(!w)return c.text("Email invitation or Cloudflare Access login required",401);
+      return env.ASSETS?env.ASSETS.fetch(c.req.raw):c.text("Build web assets before deploying",503);
+    });
+    app.get("/",(c)=>env.ASSETS?env.ASSETS.fetch(c.req.raw):c.text("DMFlow Creator API",200));
     return app.fetch(request, env, ctx);
   },
   async queue(batch, env) {
