@@ -1,5 +1,7 @@
 name: DMFlow prototype verification
 
+# Release-candidate packaged acceptance is triggered with [package] in the commit message.
+
 on:
   push:
     branches:
